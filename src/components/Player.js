@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import SpotifyWebApi from 'spotify-web-api-js'
-import Iframe from 'react-iframe'
+import SpotifyWebApi from 'spotify-web-api-js';
+import Iframe from 'react-iframe';
+import queryString from 'query-string';
 
 export default (props) => {
+  const parsedHash = queryString.parse(props.location.hash);
   return (
     <div>
       <div>
-        <Player/>
+        <Player authToken={parsedHash.access_token} />
       </div>
       <div>
         <PlayerWindow/>
@@ -28,16 +30,16 @@ class PlayerWindow extends Component {
 
 class Player extends Component {
 
-  constructor() {
-    super()
-    this.handleClick = this.handleClick.bind(this)
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   handleClick() {
     
 
     //get this by doing a request on the spotify web api console and looking what it uses for bearer
-    var authToken = 'BQBISUwuma2fPruSk563s3Cu7k2i7isRkCSt4kWuC31k31PK8qFGIJomJ6J1on_KZTo-lWNMa4C0QdOw2Spb1cLudWuJc30XKl_O2FdEzz0-WwWbR_P8BU85PBHKxTvc68x-4dhlgTfhkbib_J-F_DeMzg4kbt5Gd_r1vYxppf1FmgXXt_3Zyi7R8Z_C0bTKJfmeXUyDJy9PeA8Tgtz1aV_Pq-cOgEi7vB1IgdSpZvIhO7nLaBbFbD0HGF0d3kSm4dDSVKNCWutvf4tkidJVUul0EKRPQtLwfEsrc37chZ9q1732Snhu2mYm8xsiJEeMz-ATdw'
+    var authToken = this.props.authToken || 'BQCz-IHnREjJiTIxuIkvMaDHFTM_GZrzbLORiXGEiwYKHGYm72OhDhaQOxRGg232Lqgq9M4A-c0leiEzkqfCIqkBHjuAPgrqdkANlbCyrRHq5mQpcWbP9UzWZrTO5v0htLK3ZYHeN8STc6pSHxm1KDXXyQzCKTvszw3tRX_FdsI';
 
     var spotifyApi = new SpotifyWebApi();
     spotifyApi.setAccessToken(authToken);
