@@ -26,3 +26,10 @@
 .loginBtn {
   margin: 2em auto;
 }
+
+.playerBtn {
+  margin: 2em auto;
+}
+.btn-toolbar {
+  text-align: center;
+}
