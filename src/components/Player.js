@@ -27,15 +27,7 @@ class Player extends Component {
     this.state = {
       powerHourEnabled: false, 
       spotifyApi: new SpotifyWebApi(), 
-      timeoutLength: 60000,
-      fadeoutLength: 3000,
-      fadeinLength: 2000,
-      curVolume: null,
-      goalVolume: null,
-      isFading: false,
-      fadeDirection: 1,
-      fadeInterval: 500,
-      fadeAmount: 10
+      timeoutLength: 60000
     }
     this.state.spotifyApi.setAccessToken(this.props.authToken)
   }
