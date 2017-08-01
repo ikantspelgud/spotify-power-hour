@@ -22,7 +22,7 @@ class Player extends Component {
     super(props);
     this.onPlay = this.onPlay.bind(this);
     this.onNext = this.onNext.bind(this);
-    this._doFade = this._doFade.bind(this);
+    this.fade = this._fade.bind(this);
     this.onPowerHour = this.onPowerHour.bind(this);
     this.state = {
       powerHourEnabled: false, 
@@ -40,31 +40,14 @@ class Player extends Component {
     this.state.spotifyApi.setAccessToken(this.props.authToken)
   }
 
-  fadeVolume(props) {
-    this.setState({
-      curVolume: props.curVolume, //probably wanna get this from spotify eventually
-      goalVolume: props.goalVolume,
-      fadeAmount: Math.round(Math.abs(props.curVolume - props.goalVolume) / ((props.time/1000) / .25)), 
-      fadeInterval: 5,//props.time / Math.abs(props.curVolume - props.goalVolume),
-      fadeDirection: props.curVolume > props.goalVolume ? -1 : 1,
-      isFading: true
-    })
-  }
-
-  _doFade() {
-    this.setState({curVolume: this.state.fadeDirection * this.state.fadeAmount + this.state.curVolume})
+  _fade(cur, goal, callback) {
     
-    if(this.state.fadeDirection === 1){
-      if(this.state.curVolume >= this.state.goalVolume){
-        this.setState({isFading: false})
-      }
-    }
-    else if (this.state.curVolume <= this.state.goalVolume){
-        this.setState({isFading: false})
-    }
-    else{
-      this.state.spotifyApi.setVolume(this.state.curVolume, {})
-    }
+    if(cur <= goal)
+      return callback({})
+    var that = this
+    this.state.spotifyApi.setVolume(cur,{}).then(
+      setTimeout(function () { that._fade(cur - 5, goal, callback) }, 200)
+    )
   }
 
   onPlay() {
@@ -77,9 +60,12 @@ class Player extends Component {
   }
 
   onNext() {
-    this.fadeVolume({curVolume:100, goalVolume:0, time:3000})
-    this.state.spotifyApi.skipToNext({})
-    this.fadeVolume({curVolume:0, goalVolume:100, time:3000})
+    var obj = this
+    this.fade(100, 0, function () {
+      obj.state.spotifyApi.skipToNext({}).then(function () {
+        obj.state.spotifyApi.setVolume(100,{})
+      })
+    })
     console.log("timer trigger")
   }
 
@@ -108,16 +94,14 @@ class Player extends Component {
         </Collapse>
 
         <ReactInterval 
-          time={this.state.fadeInterval} 
-          enabled={this.state.isFading} 
-          callback={this._doFade}/>
-        
-        <ReactInterval 
           timeout={this.state.timeoutLength} 
           enabled={this.state.powerHourEnabled}
           callback={this.onNext}/>
         <div style={divCenter}>
-          <ButtonToolbar>  
+          <ButtonToolbar>
+            <Button bsSize="large" bsStyle="primary" onClick={this.onNext}>
+            Next
+            </Button>
             <Button bsSize="large" bsStyle="primary" onClick={this.onPlay}>
             Play
             </Button>
