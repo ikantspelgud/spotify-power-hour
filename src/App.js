@@ -22,10 +22,10 @@ class App extends Component {
         <div className="App-intro">
           <Router>
               <Switch>
-                <Route exact path="/spotify-power-hour/player" component={Player}/>
-                <Route exact path="/player" component={Player}/>
-                <Route exact path="/spotify-power-hour" component={LoginButton}/>
-                <Route path="/" component={LoginButton}/>
+                <Route exact path="/spotify-power-hour/" component={LoginButton}/>
+                <Route exact path="/" component={LoginButton}/>
+                <Route path="/player" component={Player}/>
+                <Route path="/spotify-power-hour/player" component={Player}/>
               </Switch>
           </Router>
         </div>
