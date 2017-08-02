@@ -33,7 +33,6 @@ class Player extends Component {
   }
 
   _fade(cur, goal, callback) {
-    
     if(cur <= goal)
       return callback({})
     var that = this
@@ -78,9 +77,12 @@ class Player extends Component {
         <Collapse in={this.state.open}>
           <div>
             <Well>
-              Instructions: Spotify must be open. The power hour button will make 
-              whatever you are playing a power hour. If you don't know what to play
-              the play button will start the dopest of playlists.
+              Spotify must be open. The power hour button will make 
+              whatever you are playing a power hour. If you don't know what to
+              play the play button will start the dopest of playlists. 
+              NOTE: This will turn your spotifies volume up to max, so lower 
+              the volume
+              on your machine if neccisary.
             </Well>
           </div>
         </Collapse>
