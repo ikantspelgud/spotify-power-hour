@@ -22,7 +22,9 @@ class App extends Component {
         <div className="App-intro">
           <Router>
               <Switch>
+                <Route path="/spotify-power-hour/player" component={Player}/>
                 <Route path="/player" component={Player}/>
+                <Route path="/spotify-power-hour" component={LoginButton}/>
                 <Route path="/" component={LoginButton}/>
               </Switch>
           </Router>
