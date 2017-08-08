@@ -9,7 +9,6 @@
 
 .App-header {
 
-  background-image: url('concrete-texture.png');
   height: 200px;
   padding: 20px;
   color: black;
@@ -40,8 +39,8 @@
 }
 
 .playerBtn {
-  margin: 2em auto;
+  margin: 1em auto;
 }
-.btn-toolbar {
-  text-align: center;
+.btn-group {
+  margin: 1em auto;
 }

@@ -25,6 +25,7 @@ class Player extends Component {
     this.fade = this.fade.bind(this);
     this.onPowerHour = this.onPowerHour.bind(this);
     this.state = {
+      curVolume: 100,
       powerHourEnabled: false, 
       spotifyApi: new SpotifyWebApi(), 
       timeoutLength: 60000,
@@ -32,38 +33,34 @@ class Player extends Component {
     this.state.spotifyApi.setAccessToken(this.props.authToken)
   }
 
-  getVolume(){
-    return 100
-  }
-
   fade(props, callback) {
     var d = new Date()
-    props.start_vol = this.getVolume()
-    if (props.vol_delta === undefined){
-      props.vol_delta = (props.goal_volume?props.goal_volume:0) - props.start_vol
-    }
-    if (props.start_time === undefined){
+    if(props.vars_set === undefined){
+      props.vars_set = true
+      props.start_vol = this.state.curVolume
       props.start_time = d.getTime()
-    }
-    if(props.fade_time === undefined){
-      props.fade_time = 3000
+      if (!props.vol_delta) {
+        props.vol_delta = ((props.goal_volume?props.goal_volume:0) - props.start_vol)
+      }
+      props.fade_time = props.fade_time || 3000
     }
 
     var cur_time = d.getTime();
     var time_passed = cur_time - props.start_time
+    var cur = Math.min(100, Math.floor(props.vol_delta * (time_passed / props.fade_time)))
     
     if(time_passed >= props.fade_time){
-       this.state.spotifyApi.setVolume(props.vol_delta + props.start_vol, function  (){
+      var vol = props.goal_volume || (Math.round(cur/100)*100)
+      this.state.spotifyApi.setVolume(Math.max(0, Math.min(100,vol)), function  (){
          typeof callback === 'function' && callback()
        })   
       return
     }
 
-    var cur = Math.floor(props.vol_delta * (time_passed / props.fade_time))
-    if (props.vol_delta < 0) cur+=100
+    if (props.vol_delta < 0){ cur+=100 }
     var that = this
     setTimeout(function (){
-      that.state.spotifyApi.setVolume(cur,{},function (){ 
+      that.state.spotifyApi.setVolume(Math.max(0,Math.min(100,cur)), function (){ 
         that.fade(props, callback) 
       })
     },200)
@@ -115,21 +112,7 @@ class Player extends Component {
   render() {
     return (
       <div>
-        <Button bsSize="large" onClick={ ()=> this.setState({ open: !this.state.open })}>
-          Instructions
-        </Button>
-        <Collapse in={this.state.open}>
-          <div>
-            <Well>
-              Spotify must be open. The power hour button will make 
-              whatever you are playing a power hour. If you don't know what to
-              play the play button will start the dopest of playlists. 
-              NOTE: This will turn your spotifies volume up to max, so lower 
-              the volume
-              on your machine if neccisary.
-            </Well>
-          </div>
-        </Collapse>
+
 
         <ReactInterval 
           timeout={this.state.timeoutLength} 
@@ -151,6 +134,21 @@ class Player extends Component {
             </Button>
           </ButtonGroup>
         </div>
+        <Button bsSize="large" onClick={ ()=> this.setState({ open: !this.state.open })}>
+          Instructions
+        </Button>
+        <Collapse in={this.state.open}>
+          <div>
+            <Well>
+              Spotify must be open. The power hour button will make 
+              whatever you are playing a power hour. If you don't know what to
+              play the play button will start the dopest of playlists. 
+              NOTE: This will turn your spotifies volume up to max, so lower 
+              the volume
+              on your machine if neccisary.
+            </Well>
+          </div>
+        </Collapse>
       </div>
     );
   }
