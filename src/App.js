@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import logo from './shades.png';
-import concrete from './concrete-texture.png'
 import './App.css';
 import Player from './components/Player';
 import LoginButton from './components/LoginButton';
