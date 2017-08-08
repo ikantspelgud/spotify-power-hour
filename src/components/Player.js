@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import SpotifyWebApi from '../spotify-web-api-js';
 import queryString from 'query-string';
 import ReactInterval from 'react-interval';
-import {Button, Collapse, Well, ButtonToolbar} from 'react-bootstrap';
+import {Button, Collapse, Well, ButtonGroup} from 'react-bootstrap';
 
 
 export default (props) => {
@@ -41,11 +41,29 @@ class Player extends Component {
     )
   }
 
+  isActiveDev(){
+    var isActive
+    this.state.spotifyApi.getMyDevices(function(err,retObj) {
+      if (retObj){
+        isActive = retObj["devices"].reduce(function(isTrue,val){ 
+          return isTrue || val.is_active
+        },false)
+      }
+    })
+    return isActive
+  }
+
+
   onPlay() {
-    this.state.spotifyApi.play({"context_uri": "spotify:user:1247199566:playlist:3lA4R6BviqvdRcFnp9gMlH", "offset": {"position": 5}})
+
+    this.state.spotifyApi.play({
+      "context_uri": "spotify:user:1247199566:playlist:3lA4R6BviqvdRcFnp9gMlH",
+      "offset": {"position": 5}
+    })
   }
 
   onPowerHour() {
+    console.log(this.isActiveDev())
     this.setState({powerHourEnabled: !this.state.powerHourEnabled})
 
   }
@@ -63,14 +81,8 @@ class Player extends Component {
 
 
   render() {
-    const divCenter = {
-      marginLeft: "auto", 
-      marginRight: "auto"
-    }
-
     return (
       <div>
-
         <Button bsSize="large" onClick={ ()=> this.setState({ open: !this.state.open })}>
           Instructions
         </Button>
@@ -91,18 +103,21 @@ class Player extends Component {
           timeout={this.state.timeoutLength} 
           enabled={this.state.powerHourEnabled}
           callback={this.onNext}/>
-        <div style={divCenter}>
-          <ButtonToolbar>
+ 
+
+
+       <div>
+          <ButtonGroup>
             <Button bsSize="large" bsStyle="primary" onClick={this.onNext}>
             Next
             </Button>
             <Button bsSize="large" bsStyle="primary" onClick={this.onPlay}>
             Play
             </Button>
-            <Button bsSize="large" bsStyle="primary" onClick={this.onPowerHour}>
-            Power Hour!!!
+            <Button bsSize="large" bsStyle={this.state.powerHourEnabled?"primary":"default"} onClick={this.onPowerHour}>
+            {this.state.powerHourEnabled?"Power Hour On":"Power Hour Off"}
             </Button>
-          </ButtonToolbar>
+          </ButtonGroup>
         </div>
       </div>
     );

@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 const APP_NAME = "spotify-power-hour";
 const CLIENT_ID = "16d85cb583694305a0e11b713a97ef21";
 const REDIRECT_URI = encodeURIComponent(getRedirectURI());
-const AUTH_URL = `http://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&scope=playlist-read-private%20playlist-read-collaborative%20user-library-read%20user-modify-playback-state&state=123&redirect_uri=${REDIRECT_URI}`;
+const AUTH_URL = `http://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&scope=playlist-read-private%20playlist-read-collaborative%20user-library-read%20user-read-playback-state%20user-modify-playback-state&state=123&redirect_uri=${REDIRECT_URI}`;
 
 function getRedirectURI() {
   let loc = window.location, appNameLoc = loc.href.indexOf(APP_NAME), baseURI;

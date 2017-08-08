@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import logo from './logo.svg';
+import logo from './shades.png';
+import concrete from './concrete-texture.png'
 import './App.css';
 import Player from './components/Player';
 import LoginButton from './components/LoginButton';
@@ -16,8 +17,8 @@ class App extends Component {
     return (
       <div className="App">
         <div className="App-header">
+          <h1>Power Hour</h1>
           <img src={logo} className="App-logo" alt="logo" />
-          <h2>Power Hour</h2>
         </div>
         <div className="App-intro">
           <Router>
