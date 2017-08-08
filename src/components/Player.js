@@ -22,35 +22,62 @@ class Player extends Component {
     super(props);
     this.onPlay = this.onPlay.bind(this);
     this.onNext = this.onNext.bind(this);
-    this.fade = this._fade.bind(this);
+    this.fade = this.fade.bind(this);
     this.onPowerHour = this.onPowerHour.bind(this);
     this.state = {
       powerHourEnabled: false, 
       spotifyApi: new SpotifyWebApi(), 
-      timeoutLength: 60000
+      timeoutLength: 60000,
     }
     this.state.spotifyApi.setAccessToken(this.props.authToken)
   }
 
-  _fade(cur, goal, callback) {
-    if(cur <= goal)
-      return callback({})
-    var that = this
-    this.state.spotifyApi.setVolume(cur,{}).then(
-      setTimeout(function () { that._fade(cur - 5, goal, callback) }, 200)
-    )
+  getVolume(){
+    return 100
   }
 
-  isActiveDev(){
-    var isActive
+  fade(props, callback) {
+    var d = new Date()
+    props.start_vol = this.getVolume()
+    if (props.vol_delta === undefined){
+      props.vol_delta = (props.goal_volume?props.goal_volume:0) - props.start_vol
+    }
+    if (props.start_time === undefined){
+      props.start_time = d.getTime()
+    }
+    if(props.fade_time === undefined){
+      props.fade_time = 3000
+    }
+
+    var cur_time = d.getTime();
+    var time_passed = cur_time - props.start_time
+    
+    if(time_passed >= props.fade_time){
+       this.state.spotifyApi.setVolume(props.vol_delta + props.start_vol, function  (){
+         typeof callback === 'function' && callback()
+       })   
+      return
+    }
+
+    var cur = Math.floor(props.vol_delta * (time_passed / props.fade_time))
+    if (props.vol_delta < 0) cur+=100
+    var that = this
+    setTimeout(function (){
+      that.state.spotifyApi.setVolume(cur,{},function (){ 
+        that.fade(props, callback) 
+      })
+    },200)
+  }
+
+  isActiveDev(callback){
     this.state.spotifyApi.getMyDevices(function(err,retObj) {
       if (retObj){
-        isActive = retObj["devices"].reduce(function(isTrue,val){ 
+        var isActive = retObj["devices"].reduce(function(isTrue,val){ 
           return isTrue || val.is_active
         },false)
+        callback(isActive)
       }
     })
-    return isActive
   }
 
 
@@ -63,19 +90,24 @@ class Player extends Component {
   }
 
   onPowerHour() {
-    console.log(this.isActiveDev())
-    this.setState({powerHourEnabled: !this.state.powerHourEnabled})
+    this.isActiveDev(function(active) {
+      if(!active){
+        window.open('https://open.spotify.com')
 
+        //Open the spotify web player
+        console.log(active)
+      }
+    })
+    this.setState({powerHourEnabled: !this.state.powerHourEnabled})
   }
 
   onNext() {
     var obj = this
-    this.fade(100, 0, function () {
-      obj.state.spotifyApi.skipToNext({}).then(function () {
-        obj.state.spotifyApi.setVolume(100,{})
+    this.fade({vol_delta: -100}, function () {
+      obj.state.spotifyApi.skipToNext({}, function () {
+        obj.fade({vol_delta:100, fade_time:2000})
       })
     })
-    console.log("timer trigger")
   }
 
 
