@@ -15,7 +15,7 @@ class App extends Component {
     return (
       <div className="App">
         
-        <div className="App-header neon">
+        <div className="App-header neon neon-on">
           <h1>Power Hour</h1>
           
         </div>

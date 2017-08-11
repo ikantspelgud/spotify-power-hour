@@ -21,10 +21,13 @@ class Player extends Component {
   constructor(props) {
     super(props);
     this.onPlay = this.onPlay.bind(this);
+    this.onKanye = this.onKanye.bind(this);
     this.onNext = this.onNext.bind(this);
+    this.onPrevious = this.onPrevious.bind(this);
     this.fade = this.fade.bind(this);
     this.onPowerHour = this.onPowerHour.bind(this);
     this.state = {
+      isPlaying: false,
       curVolume: 100,
       powerHourEnabled: false, 
       spotifyApi: new SpotifyWebApi(), 
@@ -53,15 +56,15 @@ class Player extends Component {
       var vol = props.goal_volume || (Math.round(cur/100)*100)
       this.state.spotifyApi.setVolume(Math.max(0, Math.min(100,vol)), function  (){
          typeof callback === 'function' && callback()
-       })   
+       })
       return
     }
 
     if (props.vol_delta < 0){ cur+=100 }
     var that = this
     setTimeout(function (){
-      that.state.spotifyApi.setVolume(Math.max(0,Math.min(100,cur)), function (){ 
-        that.fade(props, callback) 
+      that.state.spotifyApi.setVolume(Math.max(0,Math.min(100,cur)), function (){
+        that.fade(props, callback)
       })
     },200)
   }
@@ -78,12 +81,22 @@ class Player extends Component {
   }
 
 
-  onPlay() {
+  onKanye() {
 
     this.state.spotifyApi.play({
       "context_uri": "spotify:user:1247199566:playlist:3lA4R6BviqvdRcFnp9gMlH",
       "offset": {"position": 5}
-    }, this.setState({isPlaying: !this.state.isPlaying}))
+    }, this.setState({isPlaying: true}))
+  }
+
+  onPlay() {
+    if(!this.state.isPlaying){
+      this.state.spotifyApi.play({},this.setState({isPlaying: true}))
+    }
+    else{
+      this.state.spotifyApi.pause({},this.setState({isPlaying: false}))
+    }
+
   }
 
   openSpotify(){
@@ -111,6 +124,15 @@ class Player extends Component {
     })
   }
 
+  onPrevious() {
+    var obj = this
+    this.fade({vol_delta: -100, fade_time:500}, function(){
+      obj.state.spotifyApi.skipToPrevious({}, function(){ 
+        obj.state.spotifyApi.setVolume(100,{})
+      })
+    })
+  }
+
 
 
   render() {
@@ -123,20 +145,20 @@ class Player extends Component {
           enabled={this.state.powerHourEnabled}
           callback={this.onNext}/>
  
-        <div className={this.state.powerHourEnabled?"button":"neon-off"} onClick={this.onPowerHour}>
+        <div className={this.state.powerHourEnabled?"button":"neon"} onClick={this.onPowerHour}>
           Power Hour On
         </div>
 
         <div>
-          <div className="button" onClick={this.openSpotify}>
-            Prev
+          <div className="button" onClick={this.onPrevious}>
+            {"\u00ab"}
           </div>
           
           <div className="button" onClick={this.onPlay}>
-            {this.state.isPlaying?"Pause":"Play"}
+            {this.state.isPlaying? "\u23f8" : "\u25ba"}
           </div>
           <div className="button" onClick={this.onNext}>
-            Next
+            {"\u00bb"}
           </div>
           
         </div>
@@ -151,7 +173,7 @@ class Player extends Component {
               play the play button will start the dopest of playlists. 
               NOTE: This will turn your spotifies volume up to max, so lower 
               the volume
-              on your machine if neccisary.
+              on your machine if necessary.
             </Well>
           </div>
         </Collapse>
