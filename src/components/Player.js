@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import SpotifyWebApi from '../spotify-web-api-js';
 import queryString from 'query-string';
 import ReactInterval from 'react-interval';
-import {Button, Collapse, Well, ButtonGroup} from 'react-bootstrap';
+import {Collapse, Well} from 'react-bootstrap';
 
 
 export default (props) => {
@@ -83,7 +83,11 @@ class Player extends Component {
     this.state.spotifyApi.play({
       "context_uri": "spotify:user:1247199566:playlist:3lA4R6BviqvdRcFnp9gMlH",
       "offset": {"position": 5}
-    })
+    }, this.setState({isPlaying: !this.state.isPlaying}))
+  }
+
+  openSpotify(){
+    window.open('https://open.spotify.com')
   }
 
   onPowerHour() {
@@ -119,24 +123,26 @@ class Player extends Component {
           enabled={this.state.powerHourEnabled}
           callback={this.onNext}/>
  
-
-
-       <div>
-          <ButtonGroup>
-            <Button bsSize="large" bsStyle="primary" onClick={this.onNext}>
-            Next
-            </Button>
-            <Button bsSize="large" bsStyle="primary" onClick={this.onPlay}>
-            Play
-            </Button>
-            <Button bsSize="large" bsStyle={this.state.powerHourEnabled?"primary":"default"} onClick={this.onPowerHour}>
-            {this.state.powerHourEnabled?"Power Hour On":"Power Hour Off"}
-            </Button>
-          </ButtonGroup>
+        <div className={this.state.powerHourEnabled?"button":"neon-off"} onClick={this.onPowerHour}>
+          Power Hour On
         </div>
-        <Button bsSize="large" onClick={ ()=> this.setState({ open: !this.state.open })}>
+
+        <div>
+          <div className="button" onClick={this.openSpotify}>
+            Prev
+          </div>
+          
+          <div className="button" onClick={this.onPlay}>
+            {this.state.isPlaying?"Pause":"Play"}
+          </div>
+          <div className="button" onClick={this.onNext}>
+            Next
+          </div>
+          
+        </div>
+        <div className="button" onClick={ ()=> this.setState({ open: !this.state.open })}>
           Instructions
-        </Button>
+        </div>
         <Collapse in={this.state.open}>
           <div>
             <Well>

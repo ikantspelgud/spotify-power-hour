@@ -28,10 +28,8 @@ export default class LoginButton extends Component {
 
   render() {
     return (
-      <div className="loginBtn">
-        <button onClick={this.authorize} className="btn btn-primary btn-lg">
-          Load Spotify Data
-        </button>
+      <div onClick={this.authorize} className="button">
+        Load Spotify Data
       </div>
     )
   }
